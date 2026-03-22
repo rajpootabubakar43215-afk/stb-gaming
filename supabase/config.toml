@@ -1,0 +1,7 @@
+project_id = "yjcnnlhwqpaclbfkiveo"
+
+[functions.fetch-server-status]
+verify_jwt = false
+
+[functions.fetch-all-servers]
+verify_jwt = false
