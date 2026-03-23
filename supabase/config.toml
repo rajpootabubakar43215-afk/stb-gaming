@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.fetch-all-servers]
 verify_jwt = false
+
+[functions.parse-leaderboard]
+verify_jwt = false
