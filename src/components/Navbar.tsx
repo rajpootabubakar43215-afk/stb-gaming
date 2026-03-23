@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import stbLogo from "@/assets/stb-logo.png";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { LogOut, Menu, X } from "lucide-react";
@@ -37,6 +38,7 @@ export const Navbar = () => {
     { path: "/report", label: "Report" },
     { path: "/server-status", label: "Server Status" },
     { path: "/all-servers", label: "All Servers" },
+    { path: "/leaderboard", label: "Leaderboard" },
     { path: "/config-generator", label: "Config Generator" },
     { path: "/admins", label: "Admins" },
     { path: "/online-users", label: "Members" },
@@ -47,6 +49,7 @@ export const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           <Link to="/" className="flex items-center space-x-2">
+            <img src={stbLogo} alt="STB Logo" className="h-10 w-10" />
             <div className="text-2xl font-bold text-glow-intense">
               STB
             </div>

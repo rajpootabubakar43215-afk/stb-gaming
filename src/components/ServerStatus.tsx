@@ -3,45 +3,47 @@ import { Card, CardContent } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { Activity, Users, Map, Gamepad2 } from "lucide-react";
 
-interface ServerInfo {
-  online: boolean;
-  name: string;
-  map?: string;
-  players?: number;
-  maxPlayers?: number;
-  gameType?: string;
-  message?: string;
+interface ServerData {
+  sv_hostname?: string;
+  mapname?: string;
+  clients?: number;
+  sv_maxclients?: number;
+  gametype?: string;
 }
 
 export const ServerStatus = () => {
-  const [serverInfo, setServerInfo] = useState<ServerInfo>({
-    online: false,
-    name: "STB",
-    message: "Checking status..."
-  });
+  const [server, setServer] = useState<ServerData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const fetchServerStatus = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('server-status');
+      const { data, error } = await supabase.functions.invoke('fetch-server-status');
       
       if (error) throw error;
       
-      setServerInfo(data);
+      const stbServers = data?.stbServers || [];
+      // Find the main STB server (port 6198)
+      const mainServer = stbServers.find((s: any) => 
+        String(s.port) === '6198' || String(s.sv_hostname || '').toLowerCase().includes('stb')
+      ) || stbServers[0] || null;
+      
+      setServer(mainServer);
     } catch (error) {
       console.error('Error fetching server status:', error);
-      setServerInfo({
-        online: false,
-        name: "STB",
-        message: "Unable to fetch status"
-      });
+      setServer(null);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchServerStatus();
-    const interval = setInterval(fetchServerStatus, 30000); // Update every 30 seconds
+    const interval = setInterval(fetchServerStatus, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const isOnline = !!server;
+  const hostname = server?.sv_hostname?.replace(/\^[0-9]/g, '') || 'STB Gaming';
 
   return (
     <Card className="border-primary/20 bg-card/50 backdrop-blur">
@@ -49,9 +51,9 @@ export const ServerStatus = () => {
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-bold text-foreground">Server Status</h3>
           <div className="flex items-center space-x-2">
-            <Activity className={`h-5 w-5 ${serverInfo.online ? 'text-green-500 animate-pulse' : 'text-red-500'}`} />
-            <span className={`text-sm font-medium ${serverInfo.online ? 'text-green-500' : 'text-red-500'}`}>
-              {serverInfo.online ? 'ONLINE' : 'OFFLINE'}
+            <Activity className={`h-5 w-5 ${isOnline ? 'text-green-500 animate-pulse' : 'text-red-500'}`} />
+            <span className={`text-sm font-medium ${isOnline ? 'text-green-500' : 'text-red-500'}`}>
+              {loading ? 'CHECKING...' : isOnline ? 'ONLINE' : 'OFFLINE'}
             </span>
           </div>
         </div>
@@ -62,33 +64,33 @@ export const ServerStatus = () => {
             <span className="text-sm">IP: 5.39.63.207:6198</span>
           </div>
 
-          {serverInfo.online && serverInfo.players !== undefined && (
+          {isOnline && (
             <>
               <div className="flex items-center space-x-3 text-muted-foreground">
                 <Users className="h-5 w-5" />
                 <span className="text-sm">
-                  Players: {serverInfo.players}/{serverInfo.maxPlayers}
+                  Players: {server.clients || 0}/{server.sv_maxclients || 0}
                 </span>
               </div>
 
-              {serverInfo.map && (
+              {server.mapname && (
                 <div className="flex items-center space-x-3 text-muted-foreground">
                   <Map className="h-5 w-5" />
-                  <span className="text-sm">Map: {serverInfo.map}</span>
+                  <span className="text-sm">Map: {server.mapname}</span>
                 </div>
               )}
 
-              {serverInfo.gameType && (
+              {server.gametype && (
                 <div className="flex items-center space-x-3 text-muted-foreground">
                   <Gamepad2 className="h-5 w-5" />
-                  <span className="text-sm">Mode: {serverInfo.gameType}</span>
+                  <span className="text-sm">Mode: {server.gametype}</span>
                 </div>
               )}
             </>
           )}
 
-          {!serverInfo.online && serverInfo.message && (
-            <p className="text-sm text-muted-foreground">{serverInfo.message}</p>
+          {!isOnline && !loading && (
+            <p className="text-sm text-muted-foreground">Server is currently offline</p>
           )}
         </div>
       </CardContent>
