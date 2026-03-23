@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import stbLogo from "@/assets/stb-logo.png";
 import { useEffect, useState } from "react";
 import { User } from "@supabase/supabase-js";
 import { LogOut, Menu, X } from "lucide-react";
