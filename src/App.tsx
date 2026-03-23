@@ -19,6 +19,7 @@ import Profile from "./pages/Profile";
 import ConfigGenerator from "./pages/ConfigGenerator";
 import ServerLiveStatus from "./pages/ServerLiveStatus";
 import AllServers from "./pages/AllServers";
+import Leaderboard from "./pages/Leaderboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -39,6 +40,7 @@ const AppContent = () => {
       <Route path="/config-generator" element={<ConfigGenerator />} />
       <Route path="/server-status" element={<ServerLiveStatus />} />
       <Route path="/all-servers" element={<AllServers />} />
+      <Route path="/leaderboard" element={<Leaderboard />} />
       <Route path="/online-users" element={<OnlineUsers />} />
       <Route path="/profile/:userId" element={<UserProfile />} />
       <Route path="*" element={<NotFound />} />
