@@ -1,4 +1,4 @@
-project_id = "yjcnnlhwqpaclbfkiveo"
+project_id = "bqtkkawnkykvusjjlvov"
 
 [functions.fetch-server-status]
 verify_jwt = false
